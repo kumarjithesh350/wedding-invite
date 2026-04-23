@@ -1,0 +1,651 @@
+
+
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jithesh Kumar J & Aptha P Jain - Wedding Invitation</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            vibes: ['"Great Vibes"', 'cursive'],
+            poppins: ['Poppins', 'sans-serif'],
+          },
+          colors: {
+            gold: {
+              light: '#f5d57a',
+              DEFAULT: '#d4a843',
+              dark: '#b8860b',
+            },
+            maroon: {
+              light: '#a83252',
+              DEFAULT: '#800020',
+              dark: '#5c0015',
+            },
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* ========== BASE STYLES ========== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #0a0a0a;
+      color: #f0e6d3;
+      overflow-x: hidden;
+    }
+
+    /* ========== SCROLLBAR ========== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #1a1a1a; }
+    ::-webkit-scrollbar-thumb { background: #d4a843; border-radius: 3px; }
+
+    /* ========== CINEMATIC INTRO OVERLAY ========== */
+    #intro-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #000;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      transition: opacity 1.2s ease, visibility 1.2s ease;
+    }
+    #intro-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    .intro-heart { animation: heartbeat 1.4s ease-in-out infinite; }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.15); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.1); }
+    }
+
+    .enter-btn {
+      border: 2px solid #d4a843;
+      color: #d4a843;
+      padding: 14px 48px;
+      font-size: 1rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+    .enter-btn:hover {
+      background: #d4a843;
+      color: #000;
+      box-shadow: 0 0 30px rgba(212,168,67,0.5);
+    }
+
+    /* ========== PARALLAX SECTIONS ========== */
+    .parallax-section {
+      background-attachment: fixed;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    @media (max-width: 768px) {
+      .parallax-section {
+        background-attachment: scroll;
+      }
+    }
+
+    /* ========== GLASSMORPHISM CARDS ========== */
+    .glass-card {
+      background: rgba(30, 10, 10, 0.55);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(212, 168, 67, 0.25);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4), inset 0 0 30px rgba(212,168,67,0.04);
+    }
+
+    /* ========== SOFT GLOW EFFECTS ========== */
+    .glow-text {
+      text-shadow: 0 0 10px rgba(212,168,67,0.5), 0 0 30px rgba(212,168,67,0.25);
+    }
+    .glow-box {
+      box-shadow: 0 0 20px rgba(212,168,67,0.15), 0 0 60px rgba(128,0,32,0.1);
+    }
+
+    /* ========== SCROLL REVEAL ANIMATION ========== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ========== ELEGANT DIVIDER ========== */
+    .divider {
+      display: flex; align-items: center; justify-content: center;
+      gap: 16px; padding: 12px 0;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      height: 1px;
+      width: 80px;
+      background: linear-gradient(90deg, transparent, #d4a843, transparent);
+    }
+
+    /* ========== FLOWER PETAL ANIMATION ========== */
+    .petal {
+      position: fixed;
+      top: -60px;
+      z-index: 9998;
+      pointer-events: none;
+      opacity: 0.7;
+      animation: fall linear forwards;
+    }
+    @keyframes fall {
+      0%   { transform: translateY(0) rotate(0deg) translateX(0); opacity: 0.8; }
+      25%  { transform: translateY(25vh) rotate(90deg) translateX(30px); }
+      50%  { transform: translateY(50vh) rotate(180deg) translateX(-20px); }
+      75%  { transform: translateY(75vh) rotate(270deg) translateX(25px); }
+      100% { transform: translateY(110vh) rotate(360deg) translateX(-15px); opacity: 0; }
+    }
+
+    /* ========== MUSIC TOGGLE ========== */
+    .music-btn {
+      position: fixed; bottom: 24px; right: 24px;
+      z-index: 1000;
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: rgba(30, 10, 10, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(212,168,67,0.5);
+      color: #d4a843;
+      font-size: 22px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .music-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 25px rgba(212,168,67,0.35);
+    }
+    .music-btn.playing { animation: pulse-glow 2s ease-in-out infinite; }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 10px rgba(212,168,67,0.3); }
+      50% { box-shadow: 0 0 25px rgba(212,168,67,0.6); }
+    }
+
+    /* ========== COUNTDOWN BOXES ========== */
+    .countdown-box {
+      background: rgba(30, 10, 10, 0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(212,168,67,0.3);
+      border-radius: 14px;
+      padding: 20px 16px;
+      min-width: 90px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    .countdown-box:hover { transform: translateY(-4px); }
+
+    /* ========== BUTTON STYLES ========== */
+    .btn-gold {
+      display: inline-block;
+      background: linear-gradient(135deg, #d4a843, #b8860b);
+      color: #1a0a0a;
+      font-weight: 600;
+      padding: 14px 36px;
+      border-radius: 50px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      letter-spacing: 0.5px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+    }
+    .btn-gold:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(212,168,67,0.45);
+    }
+    .btn-outline {
+      display: inline-block;
+      border: 2px solid #d4a843;
+      color: #d4a843;
+      font-weight: 500;
+      padding: 12px 34px;
+      border-radius: 50px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      background: transparent;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+    }
+    .btn-outline:hover {
+      background: rgba(212,168,67,0.12);
+      box-shadow: 0 0 20px rgba(212,168,67,0.2);
+    }
+
+    /* ========== HERO BACKGROUND GRADIENT ========== */
+    .hero-gradient {
+      background: linear-gradient(180deg,
+        rgba(10,0,0,0.3) 0%,
+        rgba(128,0,32,0.15) 40%,
+        rgba(10,0,0,0.7) 100%
+      );
+    }
+
+    /* ========== DETAIL ICON CIRCLE ========== */
+    .icon-circle {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(212,168,67,0.2), rgba(128,0,32,0.2));
+      border: 1px solid rgba(212,168,67,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      margin: 0 auto 14px;
+    }
+
+    /* ========== HIDDEN UTILITY ========== */
+    .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+  </style>
+</head>
+<body>
+
+
+
+  <!-- ===================== MUSIC TOGGLE BUTTON ===================== -->
+  <button class="music-btn" id="music-btn" onclick="toggleMusic()" title="Toggle Music" aria-label="Toggle background music">
+    <span id="music-icon">&#9835;</span>
+  </button>
+
+  <!-- Hidden audio element for background music -->
+  <audio id="bg-music" loop preload="auto">
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg" />
+  </audio>
+
+  <!-- ===================== MAIN CONTENT ===================== -->
+  <main id="main-content" style="opacity: 1; transition: opacity 1s ease 0.4s;">
+
+    <!-- ============ SECTION: HERO ============ -->
+    <section class="parallax-section relative min-h-screen flex items-center justify-center"
+      style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1920&q=80');">
+      <div class="hero-gradient absolute inset-0"></div>
+      <div class="absolute inset-0 bg-black/50"></div>
+
+      <div class="relative z-10 text-center px-6 reveal">
+        <p class="text-gold-light tracking-[6px] uppercase text-sm mb-6">The Wedding Celebration of</p>
+
+        <h2 class="font-vibes text-gold glow-text text-6xl md:text-8xl leading-tight">
+          Jithesh <span class="text-gold-light">&</span> Aptha
+        </h2>
+
+        <div class="divider my-8">
+          <span class="text-gold text-xl">&#10047;</span>
+        </div>
+
+        <p class="font-poppins text-lg md:text-xl text-gold-light/80 max-w-xl mx-auto">
+          Two souls, one journey &mdash; bound by love, blessed by tradition.
+        </p>
+
+        <p class="mt-8 text-gold/90 text-lg tracking-wider font-light">29 &middot; June &middot; 2026</p>
+
+        <div class="mt-12">
+          <a href="#wedding-details" class="btn-outline text-sm">Scroll to Details &darr;</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SECTION: WEDDING DETAILS ============ -->
+    <section id="wedding-details" class="py-24 px-6 bg-gradient-to-b from-[#0a0a0a] via-[#140808] to-[#0a0a0a]">
+      <div class="max-w-5xl mx-auto">
+
+        <div class="text-center mb-16 reveal">
+          <h3 class="font-vibes text-gold glow-text text-5xl md:text-6xl">Wedding Details</h3>
+          <div class="divider mt-4">
+            <span class="text-gold">&#10047;</span>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-10">
+
+          <!-- Groom Card -->
+          <div class="glass-card glow-box text-center reveal">
+            <div class="icon-circle">&#128082;</div>
+            <p class="text-gold-light/60 uppercase text-xs tracking-[4px] mb-2">The Groom</p>
+            <h4 class="font-vibes text-gold text-4xl mb-3">Jithesh Kumar J</h4>
+            <div class="w-12 h-px bg-gold/30 mx-auto my-4"></div>
+            <p class="text-gold-light/70 text-sm leading-relaxed">
+              With joy and gratitude, we invite you to witness this sacred union.
+            </p>
+          </div>
+
+          <!-- Bride Card -->
+          <div class="glass-card glow-box text-center reveal">
+            <div class="icon-circle">&#128131;</div>
+            <p class="text-gold-light/60 uppercase text-xs tracking-[4px] mb-2">The Bride</p>
+            <h4 class="font-vibes text-gold text-4xl mb-3">Aptha P Jain</h4>
+            <div class="w-12 h-px bg-gold/30 mx-auto my-4"></div>
+            <p class="text-gold-light/70 text-sm leading-relaxed">
+              A beautiful soul, graceful heart &mdash; ready to begin a new chapter.
+            </p>
+          </div>
+
+        </div>
+
+        <!-- Ceremony Info -->
+        <div class="glass-card glow-box mt-12 reveal">
+          <div class="grid sm:grid-cols-3 gap-8 text-center">
+            <div>
+              <div class="icon-circle">&#128197;</div>
+              <p class="text-gold-light/50 uppercase text-xs tracking-[3px] mb-1">Date</p>
+              <p class="text-gold text-xl font-semibold">29 June 2026</p>
+              <p class="text-gold-light/60 text-sm mt-1">Monday</p>
+            </div>
+            <div>
+              <div class="icon-circle">&#128336;</div>
+              <p class="text-gold-light/50 uppercase text-xs tracking-[3px] mb-1">Time</p>
+              <p class="text-gold text-xl font-semibold">12:20 PM</p>
+              <p class="text-gold-light/60 text-sm mt-1">Muhurtham</p>
+            </div>
+            <div>
+              <div class="icon-circle">&#128205;</div>
+              <p class="text-gold-light/50 uppercase text-xs tracking-[3px] mb-1">Venue</p>
+              <p class="text-gold text-xl font-semibold">Karkala</p>
+              <p class="text-gold-light/60 text-sm mt-1">Karnataka, India</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============ PARALLAX DIVIDER ============ -->
+    <section class="parallax-section h-64 md:h-80 relative"
+      style="background-image: url('https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1920&q=80');">
+      <div class="absolute inset-0 bg-black/60 flex items-center justify-center">
+        <p class="font-vibes text-gold glow-text text-4xl md:text-5xl text-center px-6 reveal">
+          &ldquo;Where there is love, there is life.&rdquo;
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ SECTION: RECEPTION ============ -->
+    <section id="reception" class="py-24 px-6 bg-gradient-to-b from-[#0a0a0a] via-[#0d0505] to-[#0a0a0a]">
+      <div class="max-w-4xl mx-auto text-center">
+
+        <div class="mb-14 reveal">
+          <h3 class="font-vibes text-gold glow-text text-5xl md:text-6xl">Reception</h3>
+          <div class="divider mt-4">
+            <span class="text-gold">&#10047;</span>
+          </div>
+        </div>
+
+        <div class="glass-card glow-box reveal">
+          <div class="icon-circle mx-auto mb-4" style="width:70px; height:70px; font-size:30px;">&#127881;</div>
+          <p class="text-gold-light/60 uppercase text-xs tracking-[4px] mb-4">Grand Reception</p>
+          <h4 class="font-vibes text-gold text-4xl md:text-5xl mb-6">Narasimharajapura</h4>
+          <p class="text-gold-light/70 max-w-lg mx-auto leading-relaxed mb-8">
+            Join us for an evening of celebration, delectable cuisine, music, and merriment
+            as we honour the newlywed couple with family and friends.
+          </p>
+          <div class="grid sm:grid-cols-2 gap-6 max-w-md mx-auto">
+            <div>
+              <p class="text-gold-light/50 uppercase text-xs tracking-[3px] mb-1">Venue</p>
+              <p class="text-gold font-semibold text-lg">Narasimharajapura</p>
+            </div>
+            <div>
+              <p class="text-gold-light/50 uppercase text-xs tracking-[3px] mb-1">Location</p>
+              <p class="text-gold font-semibold text-lg">Karnataka, India</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============ SECTION: COUNTDOWN ============ -->
+    <section id="countdown" class="parallax-section relative py-28 px-6"
+      style="background-image: url('https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1920&q=80');">
+      <div class="absolute inset-0 bg-black/65"></div>
+
+      <div class="relative z-10 max-w-3xl mx-auto text-center">
+        <div class="reveal">
+          <h3 class="font-vibes text-gold glow-text text-5xl md:text-6xl mb-4">Counting the Days</h3>
+          <p class="text-gold-light/60 text-sm uppercase tracking-[4px] mb-12">Until we say &ldquo;I Do&rdquo;</p>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-5 reveal" id="countdown-container">
+          <div class="countdown-box">
+            <p class="text-gold text-4xl md:text-5xl font-bold" id="cd-days">--</p>
+            <p class="text-gold-light/50 text-xs uppercase tracking-[3px] mt-2">Days</p>
+          </div>
+          <div class="countdown-box">
+            <p class="text-gold text-4xl md:text-5xl font-bold" id="cd-hours">--</p>
+            <p class="text-gold-light/50 text-xs uppercase tracking-[3px] mt-2">Hours</p>
+          </div>
+          <div class="countdown-box">
+            <p class="text-gold text-4xl md:text-5xl font-bold" id="cd-minutes">--</p>
+            <p class="text-gold-light/50 text-xs uppercase tracking-[3px] mt-2">Minutes</p>
+          </div>
+          <div class="countdown-box">
+            <p class="text-gold text-4xl md:text-5xl font-bold" id="cd-seconds">--</p>
+            <p class="text-gold-light/50 text-xs uppercase tracking-[3px] mt-2">Seconds</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SECTION: RSVP & MAP ============ -->
+    <section id="rsvp" class="py-24 px-6 bg-gradient-to-b from-[#0a0a0a] via-[#140808] to-[#0a0a0a]">
+      <div class="max-w-4xl mx-auto text-center">
+
+        <div class="mb-14 reveal">
+          <h3 class="font-vibes text-gold glow-text text-5xl md:text-6xl">RSVP</h3>
+          <div class="divider mt-4">
+            <span class="text-gold">&#10047;</span>
+          </div>
+          <p class="text-gold-light/60 mt-4 max-w-lg mx-auto">
+            Your presence would make our day even more special. Please let us know if you can attend.
+          </p>
+        </div>
+
+        <div class="glass-card glow-box reveal">
+          <div class="grid sm:grid-cols-2 gap-8">
+
+            <!-- View Location -->
+            <div class="text-center">
+              <div class="icon-circle mx-auto mb-4">&#128506;</div>
+              <h5 class="text-gold font-semibold text-lg mb-2">Wedding Venue</h5>
+              <p class="text-gold-light/60 text-sm mb-6">Karkala, Karnataka, India</p>
+              <a href="https://maps.app.goo.gl/JpB4rVM43p43KdwU7" target="_blank" rel="noopener noreferrer" class="btn-outline text-sm">
+                &#128205; View Location
+              </a>
+            </div>
+
+            <!-- RSVP on WhatsApp -->
+            <div class="text-center">
+              <div class="icon-circle mx-auto mb-4">&#128140;</div>
+              <h5 class="text-gold font-semibold text-lg mb-2">Confirm Attendance</h5>
+              <p class="text-gold-light/60 text-sm mb-6">Let us know via WhatsApp</p>
+              <a href="https://wa.me/?text=Hello!%20I%20would%20love%20to%20attend%20the%20wedding%20of%20Jithesh%20Kumar%20J%20%26%20Aptha%20P%20Jain%20on%2029%20June%202026.%20Looking%20forward%20to%20it!" target="_blank" rel="noopener noreferrer" class="btn-gold text-sm">
+                &#128172; RSVP on WhatsApp
+              </a>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="py-16 px-6 text-center bg-[#060303]">
+      <div class="reveal">
+        <h4 class="font-vibes text-gold glow-text text-4xl md:text-5xl mb-4">Jithesh & Aptha</h4>
+        <p class="text-gold-light/50 text-sm tracking-wider">29 June 2026 &bull; Karkala</p>
+        <div class="divider mt-6 mb-6">
+          <span class="text-gold text-sm">&#10084;&#65039;</span>
+        </div>
+        <p class="text-gold-light/30 text-xs">&copy; 2026 &mdash; Made with love</p>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- ===================== JAVASCRIPT ===================== -->
+  <script>
+    /* ========== ENTER SITE (Cinematic Intro Dismiss) ========== */
+    function enterSite() {
+      var overlay = document.getElementById('intro-overlay');
+      overlay.classList.add('hidden');
+      document.getElementById('main-content').style.opacity = '1';
+      document.body.style.overflow = 'auto';
+
+      // Start background music after user interaction
+      var audio = document.getElementById('bg-music');
+      audio.volume = 1.35;
+      audio.play().then(function () {
+        document.getElementById('music-btn').classList.add('playing');
+      }).catch(function () {
+        // Autoplay blocked; user can toggle manually
+      });
+
+      // Start petal animation
+      startPetals();
+    }
+
+    // Lock scroll until intro is dismissed
+    //document.body.style.overflow = 'hidden';
+
+    /* ========== MUSIC TOGGLE ========== */
+    function toggleMusic() {
+      var audio = document.getElementById('bg-music');
+      var btn = document.getElementById('music-btn');
+      var icon = document.getElementById('music-icon');
+
+      if (audio.paused) {
+        audio.play().then(function () {
+          btn.classList.add('playing');
+          icon.innerHTML = '&#9835;';
+        }).catch(function () {});
+      } else {
+        audio.pause();
+        btn.classList.remove('playing');
+        icon.innerHTML = '&#9835;';
+      }
+    }
+
+    /* ========== COUNTDOWN TIMER ========== */
+    var weddingDate = new Date('June 29, 2026 12:20:00').getTime();
+
+    function updateCountdown() {
+      var now = new Date().getTime();
+      var diff = weddingDate - now;
+
+      if (diff <= 0) {
+        document.getElementById('cd-days').textContent = '0';
+        document.getElementById('cd-hours').textContent = '0';
+        document.getElementById('cd-minutes').textContent = '0';
+        document.getElementById('cd-seconds').textContent = '0';
+        return;
+      }
+
+      var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById('cd-days').textContent = days;
+      document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+      document.getElementById('cd-minutes').textContent = String(minutes).padStart(2, '0');
+      document.getElementById('cd-seconds').textContent = String(seconds).padStart(2, '0');
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    /* ========== SCROLL REVEAL ANIMATIONS ========== */
+    function handleReveal() {
+      var reveals = document.querySelectorAll('.reveal');
+      for (var i = 0; i < reveals.length; i++) {
+        var el = reveals[i];
+        var top = el.getBoundingClientRect().top;
+        var windowHeight = window.innerHeight;
+        if (top < windowHeight - 80) {
+          el.classList.add('visible');
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleReveal);
+    window.addEventListener('load', handleReveal);
+
+    /* ========== FLOWER PETAL ANIMATION ========== */
+    var petalColors = ['#e8a0b4', '#f5c6d0', '#d4a843', '#f0d8a8', '#c98a9a', '#f2b5c4'];
+    var petalInterval = null;
+
+    function createPetal() {
+      var petal = document.createElement('div');
+      petal.className = 'petal';
+
+      // Random properties
+      var size = 10 + Math.random() * 16;
+      var left = Math.random() * 100;
+      var duration = 8 + Math.random() * 10;
+      var delay = Math.random() * 2;
+      var color = petalColors[Math.floor(Math.random() * petalColors.length)];
+
+      petal.style.left = left + 'vw';
+      petal.style.width = size + 'px';
+      petal.style.height = size + 'px';
+      petal.style.borderRadius = '50% 0 50% 50%';
+      petal.style.background = 'radial-gradient(ellipse at 30% 30%, ' + color + ', ' + color + '88)';
+      petal.style.animationDuration = duration + 's';
+      petal.style.animationDelay = delay + 's';
+      petal.style.opacity = String(0.4 + Math.random() * 0.4);
+
+      document.body.appendChild(petal);
+
+      // Remove petal after animation
+      setTimeout(function () {
+        if (petal.parentNode) petal.parentNode.removeChild(petal);
+      }, (duration + delay) * 1000 + 500);
+    }
+
+    function startPetals() {
+      // Create initial batch
+      for (var i = 0; i < 8; i++) {
+        setTimeout(createPetal, i * 300);
+      }
+      // Continuously create petals
+      petalInterval = setInterval(function () {
+        createPetal();
+      }, 1800);
+    }
+
+    /* ========== SMOOTH NAV SCROLL (Anchor Links) ========== */
+    document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        var target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
