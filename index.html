@@ -196,14 +196,28 @@
     }
 
     /* ========== FLOWER PETAL ANIMATION ========== */
-    .petal {
+    #petal-layer {
       position: fixed;
-      top: -60px;
+      inset: 0;
       z-index: 9998;
+      overflow: hidden;
+      pointer-events: none;
+      /* Shifted via JS using device orientation (gyro) on mobile.
+         Smoothing is done in JS (rAF lerp), so no CSS transition here. */
+      will-change: transform;
+    }
+
+    .petal {
+      position: absolute;
+      top: -60px;
       pointer-events: none;
       opacity: 0.7;
+      will-change: transform, opacity;
       animation: fall linear forwards;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
     }
+
+    .petal svg { display: block; width: 100%; height: 100%; }
 
     @keyframes fall {
       0% {
@@ -227,6 +241,64 @@
         transform: translateY(110vh) rotate(360deg) translateX(-15px);
         opacity: 0;
       }
+    }
+
+    /* ========== HANGING FLOWER MALAS (GARLANDS) ========== */
+    .mala {
+      position: fixed;
+      top: -8px;
+      z-index: 9997;
+      pointer-events: none;
+      transform-origin: top center;
+      will-change: transform; /* gyro tilt applied here via JS */
+    }
+
+    .mala-left { left: 6px; }
+    .mala-right { right: 6px; }
+
+    /* Inner element handles the gentle idle swing so it composes with the
+       JS gyro rotation applied on the outer .mala element. */
+    .mala-sway {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform-origin: top center;
+      animation: malaSway 4.8s ease-in-out infinite;
+    }
+
+    .mala-right .mala-sway { animation-delay: -2.4s; }
+
+    @keyframes malaSway {
+      0%, 100% { transform: rotate(-3deg); }
+      50%      { transform: rotate(3deg); }
+    }
+
+    /* The string the flowers hang from */
+    .mala-string {
+      width: 2px;
+      height: 14px;
+      background: linear-gradient(#5c3a0b, #3a2607);
+    }
+
+    .mala-flower {
+      width: 38px;
+      height: 38px;
+      margin-top: -12px; /* overlap so blooms form a dense strung garland */
+      position: relative;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+    }
+
+    .mala-flower svg { display: block; width: 100%; height: 100%; }
+
+    .mala-flower.jasmine { width: 26px; height: 26px; margin-top: -8px; }
+
+    @media (max-width: 480px) {
+      .mala-flower { width: 30px; height: 30px; margin-top: -10px; }
+      .mala-flower.jasmine { width: 20px; height: 20px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .mala-sway { animation: none; }
     }
 
     /* ========== MUSIC TOGGLE ========== */
@@ -363,13 +435,14 @@
 
 <body>
 
+  <!-- ===================== FALLING PETALS LAYER ===================== -->
+  <div id="petal-layer" aria-hidden="true"></div>
 
+  <!-- ===================== HANGING FLOWER MALAS ===================== -->
+  <!-- <div class="mala mala-left" aria-hidden="true"><div class="mala-sway"></div></div>
+  <div class="mala mala-right" aria-hidden="true"><div class="mala-sway"></div></div> -->
 
   <!-- ===================== MUSIC TOGGLE BUTTON ===================== -->
-  <button class="music-btn" id="music-btn" onclick="toggleMusic()" title="Toggle Music"
-    aria-label="Toggle background music">
-    <span id="music-icon">&#9835;</span>
-  </button>
 
   <!-- Hidden audio element for background music -->
   <audio id="bg-music" loop preload="auto">
@@ -381,11 +454,11 @@
 
     <!-- ============ SECTION: HERO ============ -->
     <section class="parallax-section relative min-h-screen flex items-center justify-center"
-      style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1920&q=80');">
+      style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1920&q=80'); perspective: 900px;">
       <div class="hero-gradient absolute inset-0"></div>
       <div class="absolute inset-0 bg-black/50"></div>
 
-      <div class="relative z-10 text-center px-6 reveal">
+      <div id="hero-content" class="relative z-10 text-center px-6 reveal">
         <p class="text-gold-light tracking-[6px] uppercase text-sm mb-6">The Wedding Celebration of</p>
 
         <h2 class="font-alexbrush text-gold glow-text text-5xl md:text-8xl leading-tight">
@@ -693,16 +766,74 @@ We look forward to sharing our happiness with you.
     window.addEventListener('scroll', handleReveal);
     window.addEventListener('load', handleReveal);
 
-    /* ========== FLOWER PETAL ANIMATION ========== */
-    var petalColors = ['#e8a0b4', '#f5c6d0', '#d4a843', '#f0d8a8', '#c98a9a', '#f2b5c4'];
+    /* ========== SVG FLOWER / PETAL BUILDERS ========== */
+    var SVGNS = 'http://www.w3.org/2000/svg';
+
+    function svgEl(name, attrs) {
+      var el = document.createElementNS(SVGNS, name);
+      for (var k in attrs) { el.setAttribute(k, attrs[k]); }
+      return el;
+    }
+
+    // A single cherry-blossom-style petal (notched tip + center vein).
+    function makePetalSVG(color) {
+      var svg = svgEl('svg', { viewBox: '0 0 100 120' });
+      svg.appendChild(svgEl('path', {
+        d: 'M50 118 C14 100 4 56 30 26 C40 14 47 20 50 32 C53 20 60 14 70 26 C96 56 86 100 50 118 Z',
+        fill: color
+      }));
+      svg.appendChild(svgEl('path', {
+        d: 'M50 108 C44 84 44 56 50 36',
+        fill: 'none', stroke: 'rgba(120,40,60,0.35)', 'stroke-width': '2.5', 'stroke-linecap': 'round'
+      }));
+      return svg;
+    }
+
+    // A full bloom: two rings of petals + a center. `t` is a preset.
+    function makeFlowerSVG(t) {
+      var svg = svgEl('svg', { viewBox: '0 0 100 100' });
+      function ring(count, rx, ry, dist, fill, rot) {
+        for (var i = 0; i < count; i++) {
+          var ang = (360 / count) * i + (rot || 0);
+          svg.appendChild(svgEl('ellipse', {
+            cx: 50, cy: 50 - dist, rx: rx, ry: ry, fill: fill,
+            transform: 'rotate(' + ang.toFixed(1) + ' 50 50)'
+          }));
+        }
+      }
+      ring(t.outerCount, t.outerRx, t.outerRy, t.outerDist, t.outer, 0);
+      if (t.innerCount) {
+        ring(t.innerCount, t.innerRx, t.innerRy, t.innerDist, t.inner, 360 / t.outerCount / 2);
+      }
+      svg.appendChild(svgEl('circle', { cx: 50, cy: 50, r: t.centerR, fill: t.center }));
+      return svg;
+    }
+
+    var FLOWER_PRESETS = {
+      marigold: { outerCount: 13, outerRx: 9, outerRy: 17, outerDist: 26, outer: '#e8590c',
+                  innerCount: 11, innerRx: 7, innerRy: 13, innerDist: 17, inner: '#ffb01f',
+                  center: '#ff8c1a', centerR: 11 },
+      maroon:   { outerCount: 11, outerRx: 10, outerRy: 18, outerDist: 25, outer: '#5c0015',
+                  innerCount: 9, innerRx: 8, innerRy: 13, innerDist: 16, inner: '#a83252',
+                  center: '#d4a843', centerR: 10 },
+      jasmine:  { outerCount: 6, outerRx: 12, outerRy: 18, outerDist: 22, outer: '#ffffff',
+                  innerCount: 0, center: '#f3c44b', centerR: 12 }
+    };
+
+    /* ========== FALLING FLOWER PETALS ========== */
+    var petalColors = ['#e8a0b4', '#f5c6d0', '#d98aa0', '#f2b5c4', '#e6c27a', '#d46a86'];
     var petalInterval = null;
+    var petalLayer = document.getElementById('petal-layer');
 
     function createPetal() {
+      if (!petalLayer) petalLayer = document.getElementById('petal-layer');
+      if (!petalLayer) return;
+
       var petal = document.createElement('div');
       petal.className = 'petal';
 
       // Random properties
-      var size = 10 + Math.random() * 16;
+      var size = 14 + Math.random() * 16;
       var left = Math.random() * 100;
       var duration = 8 + Math.random() * 10;
       var delay = Math.random() * 2;
@@ -710,14 +841,13 @@ We look forward to sharing our happiness with you.
 
       petal.style.left = left + 'vw';
       petal.style.width = size + 'px';
-      petal.style.height = size + 'px';
-      petal.style.borderRadius = '50% 0 50% 50%';
-      petal.style.background = 'radial-gradient(ellipse at 30% 30%, ' + color + ', ' + color + '88)';
+      petal.style.height = (size * 1.2) + 'px';
       petal.style.animationDuration = duration + 's';
       petal.style.animationDelay = delay + 's';
-      petal.style.opacity = String(0.4 + Math.random() * 0.4);
+      petal.style.opacity = String(0.55 + Math.random() * 0.35);
+      petal.appendChild(makePetalSVG(color));
 
-      document.body.appendChild(petal);
+      petalLayer.appendChild(petal);
 
       // Remove petal after animation
       setTimeout(function () {
@@ -726,6 +856,7 @@ We look forward to sharing our happiness with you.
     }
 
     function startPetals() {
+      if (petalInterval) return; // avoid duplicate loops
       // Create initial batch
       for (var i = 0; i < 8; i++) {
         setTimeout(createPetal, i * 300);
@@ -735,6 +866,123 @@ We look forward to sharing our happiness with you.
         createPetal();
       }, 1800);
     }
+
+    // Begin petals as soon as the page is ready (intro overlay was removed).
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', startPetals);
+    } else {
+      startPetals();
+    }
+
+    /* ========== BUILD HANGING FLOWER MALAS ========== */
+    var malaTypes = ['marigold', 'maroon', 'marigold', 'jasmine', 'maroon', 'marigold'];
+
+    function buildMala(sway) {
+      // Top knot/string
+      var str = document.createElement('div');
+      str.className = 'mala-string';
+      sway.appendChild(str);
+
+      // Drape the garland to roughly half the viewport height.
+      var count = Math.max(12, Math.round((window.innerHeight * 0.5) / 26));
+      for (var i = 0; i < count; i++) {
+        var type = malaTypes[i % malaTypes.length];
+        var f = document.createElement('div');
+        f.className = 'mala-flower ' + type;
+        f.appendChild(makeFlowerSVG(FLOWER_PRESETS[type]));
+        sway.appendChild(f);
+      }
+    }
+
+    function buildMalas() {
+      var sways = document.querySelectorAll('.mala-sway');
+      for (var i = 0; i < sways.length; i++) {
+        if (!sways[i].childNodes.length) buildMala(sways[i]);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', buildMalas);
+    } else {
+      buildMalas();
+    }
+
+    /* ========== GYRO / DEVICE-ORIENTATION EFFECTS (mobile) ========== */
+    // Tilting the device gently sways the petals and the hero content,
+    // giving a subtle 3D parallax feel on phones.
+    var gyroEnabled = false;   // listener registered
+    var gyroActive = false;    // real sensor data received -> rAF loop running
+    var targetTiltX = 0, targetTiltY = 0; // normalized -1..1
+    var tiltX = 0, tiltY = 0;             // smoothed
+    var heroContent = document.getElementById('hero-content');
+    var malas = document.querySelectorAll('.mala');
+
+    function clampUnit(v) { return v < -1 ? -1 : (v > 1 ? 1 : v); }
+
+    function handleOrientation(e) {
+      // Ignore devices/desktops with no real orientation sensor so we don't
+      // override the hero reveal animation with a zeroed transform.
+      if (e.gamma == null && e.beta == null) return;
+
+      // gamma: left/right tilt [-90,90]; beta: front/back tilt [-180,180]
+      targetTiltX = clampUnit((e.gamma || 0) / 35);
+      targetTiltY = clampUnit(((e.beta || 0) - 45) / 45); // 45deg = comfortable holding angle
+
+      if (!gyroActive) {
+        gyroActive = true;
+        requestAnimationFrame(gyroLoop);
+      }
+    }
+
+    function gyroLoop() {
+      // Smooth toward target for a fluid, non-jittery motion
+      tiltX += (targetTiltX - tiltX) * 0.08;
+      tiltY += (targetTiltY - tiltY) * 0.08;
+
+      if (petalLayer) {
+        petalLayer.style.transform =
+          'translate3d(' + (tiltX * 45).toFixed(2) + 'px,' + (tiltY * 22).toFixed(2) + 'px,0)';
+      }
+      if (heroContent) {
+        heroContent.style.transform =
+          'translate3d(' + (tiltX * -18).toFixed(2) + 'px,' + (tiltY * -10).toFixed(2) + 'px,0) ' +
+          'rotateY(' + (tiltX * 5).toFixed(2) + 'deg) rotateX(' + (tiltY * -4).toFixed(2) + 'deg)';
+      }
+      // Swing the hanging malas like pendulums with the tilt.
+      if (malas.length) {
+        var malaAngle = (tiltX * 14).toFixed(2) + 'deg';
+        for (var m = 0; m < malas.length; m++) {
+          malas[m].style.transform = 'rotate(' + malaAngle + ')';
+        }
+      }
+      requestAnimationFrame(gyroLoop);
+    }
+
+    function enableGyro() {
+      if (gyroEnabled) return;
+      if (!window.DeviceOrientationEvent) return;
+
+      // iOS 13+ requires an explicit permission request from a user gesture.
+      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission().then(function (state) {
+          if (state === 'granted') {
+            window.addEventListener('deviceorientation', handleOrientation);
+            gyroEnabled = true;
+          }
+        }).catch(function () { /* permission denied or unavailable */ });
+      } else {
+        // Android / other browsers: no explicit permission needed.
+        // The rAF loop only starts once real sensor data arrives.
+        window.addEventListener('deviceorientation', handleOrientation);
+        gyroEnabled = true;
+      }
+    }
+
+    // Attempt to enable immediately (Android), and also on first user gesture
+    // (needed to satisfy the iOS permission prompt requirement).
+    enableGyro();
+    window.addEventListener('touchend', enableGyro, { once: false });
+    window.addEventListener('click', enableGyro, { once: false });
 
     /* ========== SMOOTH NAV SCROLL (Anchor Links) ========== */
     document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
